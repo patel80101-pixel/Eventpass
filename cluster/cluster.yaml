@@ -1,0 +1,17 @@
+# eksctl config - creates the EKS control plane + 2 worker nodes in Mumbai (ap-south-1)
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: eventpass-cluster
+  region: ap-south-1
+
+managedNodeGroups:
+  - name: eventpass-nodes
+    instanceType: t3.medium
+    desiredCapacity: 2
+    minSize: 1
+    maxSize: 3
+    volumeSize: 20
+    labels:
+      role: worker

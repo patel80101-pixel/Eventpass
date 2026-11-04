@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ 'New event' if mode == 'new' else 'Edit event' }}{% endblock %}
+{% block content %}
+<h1>{{ 'Create an event' if mode == 'new' else 'Edit event' }}</h1>
+<form class="card form" method="post"
+      action="{{ url_for('event_new') if mode == 'new' else url_for('event_edit', event_id=event.id) }}">
+  <label>Title <input name="title" value="{{ event.title or '' }}" required></label>
+  <div class="form-row">
+    <label>Category
+      <select name="category" required>
+        {% for c in categories %}<option {{ 'selected' if c == event.category }}>{{ c }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Venue <input name="venue" value="{{ event.venue or '' }}" required></label>
+  </div>
+  <div class="form-row">
+    <label>Date <input type="date" name="event_date" value="{{ event.event_date or '' }}" required></label>
+    <label>Time <input type="time" name="event_time" value="{{ event.event_time or '' }}" required></label>
+  </div>
+  <div class="form-row">
+    <label>Capacity (seats) <input type="number" min="1" name="capacity" value="{{ event.capacity or '' }}" required></label>
+    <label>Ticket price (₹, 0 = free) <input type="number" min="0" step="1" name="price" value="{{ event.price if event.price is not none else '' }}"></label>
+  </div>
+  <label>Description <textarea name="description" rows="3">{{ event.description or '' }}</textarea></label>
+  <div class="actions">
+    <button class="btn" type="submit">{{ 'Create event' if mode == 'new' else 'Save changes' }}</button>
+    <a class="btn btn-ghost" href="{{ url_for('events_list') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Events{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Events</h1>
+  <a class="btn" href="{{ url_for('event_new') }}">+ New event</a>
+</div>
+<form class="filters" method="get">
+  <input type="search" name="q" value="{{ q }}" placeholder="Search by title or venue">
+  <select name="category">
+    <option value="">All categories</option>
+    {% for c in categories %}<option {{ 'selected' if c == cat }}>{{ c }}</option>{% endfor %}
+  </select>
+  <button class="btn btn-ghost" type="submit">Filter</button>
+</form>
+<div class="cards">
+  {% for e in events %}
+  <article class="event-card">
+    <div class="event-top">
+      <span class="tag">{{ e.category }}</span>
+      {% if e.available <= 0 %}<span class="badge badge-cancelled">SOLD OUT</span>
+      {% elif e.available <= e.capacity * 0.1 %}<span class="badge badge-warn">{{ e.available }} left</span>{% endif %}
+    </div>
+    <h3><a href="{{ url_for('event_detail', event_id=e.id) }}">{{ e.title }}</a></h3>
+    <p class="muted">{{ e.event_date }} · {{ e.event_time }}<br>{{ e.venue }}</p>
+    <div class="meter"><i style="width: {{ e.fill_pct }}%"></i></div>
+    <div class="event-foot">
+      <span>{{ e.booked }}/{{ e.capacity }} booked</span>
+      <strong>{{ 'Free' if e.price == 0 else '₹%d'|format(e.price) }}</strong>
+    </div>
+  </article>
+  {% else %}
+  <p class="muted">No events match your search.</p>
+  {% endfor %}
+</div>
+{% endblock %}

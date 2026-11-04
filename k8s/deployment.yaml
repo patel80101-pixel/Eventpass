@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eventpass
+  namespace: eventpass
+  labels:
+    app: eventpass
+spec:
+  # 1 replica because the demo uses SQLite inside the pod (each pod would get its own copy of the data).
+  replicas: 1
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: eventpass
+  template:
+    metadata:
+      labels:
+        app: eventpass
+    spec:
+      containers:
+        - name: eventpass
+          # The CI/CD pipeline rewrites the line below with the new image tag on every push.
+          image: 403030570550.dkr.ecr.ap-south-1.amazonaws.com/eventpass:v1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          env:
+            - name: SEED_DATA
+              value: "true"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+      volumes:
+        - name: data
+          emptyDir: {}

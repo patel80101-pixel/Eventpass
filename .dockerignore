@@ -1,0 +1,14 @@
+.git
+.github
+k8s
+argocd
+cluster
+iam
+scripts
+tests
+instance
+__pycache__
+*.pyc
+*.db
+*.md
+.pytest_cache

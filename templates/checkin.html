@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Check-in{% endblock %}
+{% block content %}
+<h1>Venue check-in</h1>
+<form class="card form narrow" method="post">
+  <label>Ticket code <input name="code" placeholder="EP-XXXXXX" autofocus required></label>
+  <button class="btn" type="submit">Verify &amp; check in</button>
+</form>
+{% if result %}
+  <div class="flash flash-{{ result[0] }} narrow">{{ result[1] }}</div>
+{% endif %}
+{% endblock %}

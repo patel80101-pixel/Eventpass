@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Not found{% endblock %}
+{% block content %}
+<div class="card narrow center">
+  <h1>404</h1>
+  <p>That page or ticket doesn't exist.</p>
+  <a class="btn" href="{{ url_for('dashboard') }}">Go to dashboard</a>
+</div>
+{% endblock %}

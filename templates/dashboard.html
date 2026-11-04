@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+<section class="stats">
+  <div class="stat"><span>Events</span><strong>{{ summary.events }}</strong></div>
+  <div class="stat"><span>Bookings</span><strong>{{ summary.bookings }}</strong></div>
+  <div class="stat"><span>Tickets sold</span><strong>{{ summary.sold }}</strong></div>
+  <div class="stat"><span>Revenue</span><strong>₹{{ "{:,.0f}".format(summary.revenue) }}</strong></div>
+  <div class="stat"><span>Check-in rate</span><strong>{{ summary.checkin_rate }}%</strong></div>
+  <div class="stat {{ 'warn' if summary.sold_out }}"><span>Sold out</span><strong>{{ summary.sold_out }}</strong></div>
+</section>
+
+<div class="grid-2">
+  <section class="card">
+    <h2>Upcoming events</h2>
+    {% for e in events %}
+      <a class="row-link" href="{{ url_for('event_detail', event_id=e.id) }}">
+        <div>
+          <strong>{{ e.title }}</strong>
+          <small>{{ e.event_date }} · {{ e.event_time }} · {{ e.venue }}</small>
+        </div>
+        <div class="meter" title="{{ e.booked }}/{{ e.capacity }} booked"><i style="width: {{ e.fill_pct }}%"></i></div>
+      </a>
+    {% else %}
+      <p class="muted">No events yet. <a href="{{ url_for('event_new') }}">Create one</a>.</p>
+    {% endfor %}
+  </section>
+  <section class="card">
+    <h2>Recent bookings</h2>
+    {% for r in recent %}
+      <a class="row-link" href="{{ url_for('ticket', code=r.ticket_code) }}">
+        <div>
+          <strong>{{ r.name }}</strong>
+          <small>{{ r.title }} · {{ r.tickets }} ticket(s)</small>
+        </div>
+        <span class="badge badge-{{ r.status|lower }}">{{ 'CHECKED IN' if r.checked_in_at else r.status }}</span>
+      </a>
+    {% else %}
+      <p class="muted">No bookings yet.</p>
+    {% endfor %}
+  </section>
+</div>
+{% endblock %}

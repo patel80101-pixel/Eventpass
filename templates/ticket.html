@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Ticket {{ reg.ticket_code }}{% endblock %}
+{% block content %}
+<div class="ticket {{ 'is-cancelled' if reg.status == 'CANCELLED' }}">
+  <div class="ticket-main">
+    <small>EVENTPASS · ADMIT {{ reg.tickets }}</small>
+    <h1>{{ reg.title }}</h1>
+    <p>{{ reg.event_date }} · {{ reg.event_time }}<br>{{ reg.venue }}</p>
+    <p><strong>{{ reg.name }}</strong><br><span class="muted">{{ reg.email }} · {{ reg.phone }}</span></p>
+    <p>Paid: <strong>₹{{ '%d'|format(reg.amount) }}</strong></p>
+  </div>
+  <div class="ticket-stub">
+    <small>TICKET CODE</small>
+    <code class="code">{{ reg.ticket_code }}</code>
+    <span class="badge badge-{{ 'checked' if reg.checked_in_at else reg.status|lower }}">
+      {{ 'CHECKED IN' if reg.checked_in_at else reg.status }}
+    </span>
+  </div>
+</div>
+<div class="actions center">
+  <a class="btn btn-ghost" href="{{ url_for('event_detail', event_id=reg.event_id) }}">Back to event</a>
+  {% if reg.status != 'CANCELLED' and not reg.checked_in_at %}
+  <form method="post" action="{{ url_for('cancel', code=reg.ticket_code) }}"
+        onsubmit="return confirm('Cancel this booking?')">
+    <button class="btn btn-danger" type="submit">Cancel booking</button>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

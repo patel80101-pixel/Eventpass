@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}{{ event.title }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <span class="tag">{{ event.category }}</span>
+    <h1>{{ event.title }}</h1>
+    <p class="muted">{{ event.event_date }} · {{ event.event_time }} · {{ event.venue }}</p>
+  </div>
+  <div class="actions">
+    <a class="btn btn-ghost" href="{{ url_for('event_edit', event_id=event.id) }}">Edit</a>
+    <form method="post" action="{{ url_for('event_delete', event_id=event.id) }}"
+          onsubmit="return confirm('Delete this event and all its bookings?')">
+      <button class="btn btn-danger" type="submit">Delete</button>
+    </form>
+  </div>
+</div>
+
+<div class="grid-2">
+  <section class="card">
+    <h2>About</h2>
+    <p>{{ event.description or 'No description.' }}</p>
+    <div class="meter big"><i style="width: {{ event.fill_pct }}%"></i></div>
+    <p><strong>{{ event.booked }}</strong> of {{ event.capacity }} seats booked ·
+       <strong>{{ event.available if event.available > 0 else 0 }}</strong> available ·
+       {{ 'Free entry' if event.price == 0 else '₹%d per ticket'|format(event.price) }}</p>
+  </section>
+
+  <section class="card">
+    <h2>Register</h2>
+    {% if event.available <= 0 %}
+      <p class="flash flash-error">This event is sold out.</p>
+    {% else %}
+    <form class="form" method="post" action="{{ url_for('register', event_id=event.id) }}">
+      <label>Full name <input name="name" required></label>
+      <label>Email <input type="email" name="email" required></label>
+      <div class="form-row">
+        <label>Phone <input name="phone" pattern="[0-9+ ]{10,15}" required></label>
+        <label>Tickets
+          <select name="tickets">
+            {% for n in range(1, max_tickets + 1) %}{% if n <= event.available %}<option>{{ n }}</option>{% endif %}{% endfor %}
+          </select>
+        </label>
+      </div>
+      <button class="btn" type="submit">Book tickets</button>
+    </form>
+    {% endif %}
+  </section>
+</div>
+
+<section class="card">
+  <h2>Registrations ({{ regs|length }})</h2>
+  {% if regs %}
+  <table>
+    <thead><tr><th>Ticket</th><th>Name</th><th>Email</th><th>Qty</th><th>Amount</th><th>Status</th></tr></thead>
+    <tbody>
+    {% for r in regs %}
+      <tr>
+        <td><a href="{{ url_for('ticket', code=r.ticket_code) }}"><code>{{ r.ticket_code }}</code></a></td>
+        <td>{{ r.name }}</td><td>{{ r.email }}</td><td>{{ r.tickets }}</td>
+        <td>₹{{ '%d'|format(r.amount) }}</td>
+        <td><span class="badge badge-{{ 'checked' if r.checked_in_at else r.status|lower }}">{{ 'CHECKED IN' if r.checked_in_at else r.status }}</span></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="muted">No registrations yet.</p>{% endif %}
+</section>
+{% endblock %}

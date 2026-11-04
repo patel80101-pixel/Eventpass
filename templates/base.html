@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}EventPass{% endblock %} · EventPass</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="{{ url_for('dashboard') }}"><span class="logo">🎟</span> EventPass</a>
+  <nav>
+    <a href="{{ url_for('dashboard') }}" class="{{ 'active' if request.endpoint == 'dashboard' }}">Dashboard</a>
+    <a href="{{ url_for('events_list') }}" class="{{ 'active' if request.endpoint and request.endpoint.startswith('event') }}">Events</a>
+    <a href="{{ url_for('checkin') }}" class="{{ 'active' if request.endpoint == 'checkin' }}">Check-in</a>
+    <a href="{{ url_for('event_new') }}" class="btn btn-sm">+ New event</a>
+  </nav>
+</header>
+<main class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}<div class="flash flash-{{ cat }}">{{ msg }}</div>{% endfor %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+<footer class="footer">
+  EventPass · Cloud Native Orchestration project by Pooja Patel (20240801035) ·
+  build <code>{{ app_version[:12] }}</code> · served by pod <code>{{ pod_name }}</code>
+</footer>
+</body>
+</html>
